@@ -1,4 +1,5 @@
 import { Container, VStack } from "@chakra-ui/react";
+import { api } from '../lib/api';
 import Header from "../components/Header";
 import LoginModal from "../components/LoginModal";
 import PostForm from "../components/PostForm";
@@ -9,25 +10,43 @@ const Index = () => {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
 
-  const handleLogin = (email, password) => {
-    // Placeholder for login logic
-    setUser({ email });
+  const handleLogin = async (email, password) => {
+    try {
+      const response = await api.$fetch('POST', '/auth', {}, { email, password });
+      setUser({ email, token: response.token });
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
   };
 
-  const handlePostSubmit = (post) => {
-    setPosts([post, ...posts]);
+  const handlePostSubmit = async (post) => {
+    try {
+      const response = await api.posts.create({ post });
+      setPosts([response, ...posts]);
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
   };
 
-  const handleDeletePost = (postId) => {
-    setPosts(posts.filter(post => post.id !== postId));
+  const handleDeletePost = async (postId) => {
+    try {
+      await api.posts.delete({ id: postId });
+      setPosts(posts.filter(post => post.id !== postId));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
   };
 
-  const handleReactPost = (postId) => {
-    // Placeholder for react logic
+  const handleReactPost = async (postId, emoji) => {
+    try {
+      await api.reactions.create({ reaction: { post_id: postId, emoji } });
+    } catch (error) {
+      console.error('Error reacting to post:', error);
+    }
   };
 
   return (
