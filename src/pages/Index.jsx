@@ -7,7 +7,7 @@ import PostList from "../components/PostList";
 import { useState } from "react";
 
 const Index = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [posts, setPosts] = useState([]);
 
   const handleLogin = async (email, password) => {
@@ -52,7 +52,7 @@ const Index = () => {
   return (
     <Container maxW="container.xl">
       <Header onLogin={handleLogin} onLogout={handleLogout} user={user} />
-      <LoginModal isOpen={!user} onClose={() => {}} />
+      <LoginModal isOpen={!user || Object.keys(user).length === 0} onClose={handleLogout} />
       <VStack spacing={8} mt={4}>
         <PostForm onSubmit={handlePostSubmit} />
         <PostList posts={posts} onDelete={handleDeletePost} onReact={handleReactPost} />
